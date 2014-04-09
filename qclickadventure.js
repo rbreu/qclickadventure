@@ -26,7 +26,7 @@ Q.Sprite.extend("Background", {
     init: function (p) {
         this._super(p, {type: Q.SPRITE_NONE,
                         collisionMask: Q.SPRITE_NONE,
-                        x: 360, y: 288, z: -1000});
+                        x: Q.width/2, y: Q.height/2, z: -1000});
     }
 });
 
@@ -60,8 +60,8 @@ Q.Class.extend("Room", {
                                         that.exit_left.target));
             }
             if (that.exit_right) {
-                stage.insert(new Q.Exit("RIGHT", that.exit_left.label,
-                                        that.exit_left.target));
+                stage.insert(new Q.Exit("RIGHT", that.exit_right.label,
+                                        that.exit_right.target));
             }
         });
         Q.stageScene("Room", Q.MAIN_STAGE);
@@ -77,13 +77,7 @@ Q.Class.extend("Room", {
     },
 
     removeItem: function (item, force) {
-        var i = 0;
-        if (item.inInventory()) {
-            var items = Q.stage(Q.INVENTORY_STAGE).items;
-            for (i = 0; i < items.length; i++) {
-                items[i].p.x = 25 + 45 * (i - 1);
-            }
-        }
+        var reorderInventory = item.inInventory()
         if (force) {
             Q.stage(Q.MAIN_STAGE).forceRemove(item);
             Q.stage(Q.INVENTORY_STAGE).forceRemove(item);
@@ -92,6 +86,13 @@ Q.Class.extend("Room", {
             Q.stage(Q.INVENTORY_STAGE).remove(item);
         }
         this._removeItem(item);
+        if (reorderInventory) {
+            var i = 0;
+            var items = Q.stage(Q.INVENTORY_STAGE).items;
+            for (i = 0; i < items.length; i++) {
+                items[i].p.x = 25 + 45 * i;
+            }
+        }
     },
 
     insertItem: function (item) {
