@@ -39,8 +39,8 @@ Q.load(["red_circle.png", "village.png", "black_thingy.png", "bird.png",
                     [frame_empty,
                      function (item, other) {
                          other.room.insertItem(frame_with_circle);
-                         other.room.removeItem(item);
-                         other.room.removeItem(other, true);
+                         other.room.removeItem(item, true);
+                         other.room.removeItem(other);
                          insertLabel("The circle looks very pretty inside the frame!");
                          Q.currMessageItem = frame_with_circle;
                      }]]});

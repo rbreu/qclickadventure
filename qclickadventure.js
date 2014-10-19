@@ -1,3 +1,5 @@
+/*jslint plusplus: true, sloppy: true, vars: true */
+
 var Q = Quintus({development: true})
     .include("Sprites,Scenes,Input,Touch,UI");
 
@@ -26,7 +28,7 @@ Q.Sprite.extend("Background", {
     init: function (p) {
         this._super(p, {type: Q.SPRITE_NONE,
                         collisionMask: Q.SPRITE_NONE,
-                        x: Q.width/2, y: Q.height/2, z: -1000});
+                        x: Q.width / 2, y: Q.height / 2, z: -1000});
     }
 });
 
@@ -77,7 +79,7 @@ Q.Class.extend("Room", {
     },
 
     removeItem: function (item, force) {
-        var reorderInventory = item.inInventory()
+        var reorderInventory = item.inInventory();
         if (force) {
             Q.stage(Q.MAIN_STAGE).forceRemove(item);
             Q.stage(Q.INVENTORY_STAGE).forceRemove(item);
@@ -117,7 +119,7 @@ Q.Class.extend("Room", {
 var insertLabel = function (labelText) {
     Q.scene("UI", function (stage) {
         var label = stage.insert(new Q.UI.Container({
-            fill: "rgba(255,255,255,0.8)",
+            fill: "rgba(255,255,255,0.9)",
             border: 0,
             shadow: 0,
             x: Q.width / 2,
@@ -141,18 +143,21 @@ var insertLabel = function (labelText) {
 
 
 var hoverable_step = function (dt) {
+    var remove_items = Q.stage(Q.MAIN_STAGE).removeList.length +
+        Q.stage(Q.INVENTORY_STAGE).removeList.length;
     if (this.p.over) {
-        if (!Q.currLabelItem && !Q.currMenuItem && Q.currMessageItem !== this) {
+        if (!Q.currLabelItem && !Q.currMenuItem && Q.currMessageItem !== this && !remove_items) {
             insertLabel(this.p.name);
             Q.currLabelItem = this;
             Q.currMessageItem = null;
         }
-        if (Q.currMessageItem != null && Q.currMessageItem !== this) {
+        if (Q.currMessageItem != null && Q.currMessageItem !== this && !remove_items) {
             Q.clearStage(Q.UI_STAGE);
             Q.currMessageItem = null;
         }
+
     } else {
-        if (Q.currLabelItem != null && Q.currLabelItem === this) {
+        if (Q.currLabelItem != null && Q.currLabelItem === this && !remove_items) {
             Q.clearStage(Q.UI_STAGE);
             Q.currLabelItem = null;
         }
@@ -255,7 +260,6 @@ Q.Sprite.extend("Item", {
             }));
 
             var y = 0;
-
             var txt = stage.insert(new Q.MenuItem(
                 { label: Q.VIEW_LABEL, x: 0, y: y },
                 function () {
